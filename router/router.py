@@ -12,7 +12,7 @@ from transformers import BertTokenizer, BertForSequenceClassification
 from torch.utils.data import DataLoader, TensorDataset
 
 
-# Together
+# Providers
 from providers.together.config import get_together_client, get_together_url, get_together_api_key
 client = get_together_client()
 
