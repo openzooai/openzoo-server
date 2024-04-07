@@ -13,19 +13,11 @@ import requests
 import sseclient
 import warnings
 warnings.filterwarnings('ignore')
-import dotenv
-dotenv.load_dotenv()
 
 
-# OpenAI for Together
-from openai import OpenAI
-
-TOGETHER_URL = os.environ.get("TOGETHER_URL")
-TOGETHER_API_KEY = os.environ.get("TOGETHER_API_KEY")
-client = OpenAI(
-  api_key=TOGETHER_API_KEY,
-  base_url='https://api.together.xyz/v1',
-)
+# Together
+from providers.together.config import get_together_client
+client = get_together_client()
 
 
 MODELS = {
