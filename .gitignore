@@ -1,0 +1,8 @@
+# Router pycache
+router/__pycache__
+
+# Validator pycache
+validations/__pycache__
+
+# Models
+models/
