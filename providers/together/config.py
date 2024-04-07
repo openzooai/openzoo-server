@@ -15,3 +15,11 @@ def get_together_client():
         api_key=TOGETHER_API_KEY,
         base_url='https://api.together.xyz/v1',
     )
+
+
+def get_together_url():
+    return TOGETHER_URL
+
+
+def get_together_api_key():
+    return TOGETHER_API_KEY

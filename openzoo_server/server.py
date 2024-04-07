@@ -1,14 +1,21 @@
+# OS, utils
 import asyncio
 import json
 import time
 
+
+# FastAPI, Starlette
 from starlette.responses import StreamingResponse
 from fastapi import FastAPI, HTTPException, Request
-from router.router import Router
 
+
+# OpenZoo
+from router.router import Router
 from validations.chat import ChatCompletionRequest
 
-app = FastAPI(title="OpenAI-compatible API")
+
+# Instantiate the FastAPI app
+app = FastAPI(title="OpenZoo")
 
 
 # instantiate the router
@@ -17,7 +24,9 @@ router = Router()
 
 @app.post("/chat/completions")
 async def chat_completions(request: ChatCompletionRequest):
-
+    """
+    Generate completions for a chat prompt.
+    """
     if request.stream:
         return StreamingResponse(
             router.generate_stream(request), media_type="application/x-ndjson"

@@ -1,13 +1,4 @@
-# Classifier
-import torch
-from transformers import BertTokenizer, BertForSequenceClassification
-from torch.utils.data import DataLoader, TensorDataset
-
-
 # OS, utils
-import os
-import time
-import asyncio
 import json
 import requests
 import sseclient
@@ -15,17 +6,19 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
+# Classifier
+import torch
+from transformers import BertTokenizer, BertForSequenceClassification
+from torch.utils.data import DataLoader, TensorDataset
+
+
 # Together
-from providers.together.config import get_together_client
+from providers.together.config import get_together_client, get_together_url, get_together_api_key
 client = get_together_client()
 
 
-MODELS = {
-    'chat': "meta-llama/Llama-2-7b-chat-hf",
-    'summarization': "meta-llama/Llama-2-7b-chat-hf",
-    'math': "meta-llama/Llama-2-13b-chat-hf",
-    'text_to_sql': "meta-llama/Llama-2-13b-chat-hf"
-}
+# Models by task
+from router.models import _select_model
 
 
 class Router:
@@ -43,10 +36,10 @@ class Router:
     def generate(self,request):
         messages=request.messages
         task=request.model
-        text = messages[-1].content
+        prompt = messages[-1].content
         
         # Select model
-        model_name = self.select_model(text, task)
+        model_name = self.select_model(prompt, task)
                 
         response = client.chat.completions.create(
             messages=messages,
@@ -57,9 +50,11 @@ class Router:
     
 
     async def generate_stream(self,request):
-        url = TOGETHER_URL
-        model = request.model
+        url = get_together_url()
+        api_key = get_together_api_key()
         prompt = request.messages[-1].content
+        task = request.model
+        model = self.select_model(prompt, task)
 
         payload = {
             "model": model,
@@ -74,7 +69,7 @@ class Router:
         headers = {
             "accept": "application/json",
             "content-type": "application/json",
-            "Authorization": f"Bearer {os.environ['TOGETHER_API_KEY']}",
+            "Authorization": f"Bearer {api_key}",
         }
 
         response = requests.post(url, json=payload, headers=headers, stream=True)
@@ -91,21 +86,13 @@ class Router:
 
 
     def select_model(self, text, task):
-        
-        # If task is specified, 
-        if task is not None:
-            # Check if query type is in MODELS keys
-            if task not in MODELS.keys(): raise ValueError(f"Task {task} not found in MODELS keys")
-
-            query_type = task
-        else:
+        # If task is not specified, 
+        if task is None:
             # Infer intent
             matches = self.predict_model(text)
-            print(matches)
-            query_type = [key for key, value in matches.items() if value == 1][0]
+            task = [key for key, value in matches.items() if value == 1][0]
 
-        # Select model
-        model_name = MODELS[query_type]
+        model_name = _select_model(text, task)
 
         return model_name
     
@@ -137,19 +124,3 @@ class Router:
         labels_list = ['chat', 'summarization', 'math', 'text_to_sql']
         result = dict(zip(labels_list, predicted_labels[0]))
         return result
-
-
-def flatten_dicts_to_string(dict_list):
-    """
-    Flattens a list of dictionaries into a string, assuming all values are strings.
-    
-    :param dict_list: List of dictionaries to be flattened.
-    :return: A single string representation of all dictionaries.
-    """
-    # Flatten each dictionary into a list of 'key: value' strings
-    flattened_list = [f"{key}: {value}" for d in dict_list for key, value in d.items()]
-    
-    # Join the list into a single string, separated by ', '
-    flattened_string = ', '.join(flattened_list)
-    
-    return flattened_string
