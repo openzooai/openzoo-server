@@ -90,6 +90,7 @@ class Router:
         if task is None:
             # Infer intent
             matches = self.predict_model(text)
+            print(matches)
             task = [key for key, value in matches.items() if value == 1][0]
 
         model_name = _select_model(text, task)

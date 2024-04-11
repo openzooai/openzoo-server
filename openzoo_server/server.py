@@ -11,7 +11,7 @@ from fastapi import FastAPI, HTTPException, Request
 
 # OpenZoo
 from router.router import Router
-from validations.chat import ChatCompletionRequest
+from validation.chat import ChatCompletionRequest
 
 
 # Instantiate the FastAPI app
@@ -40,9 +40,3 @@ async def chat_completions(request: ChatCompletionRequest):
         resp_content = "Empty prompt. Please provide a message."
 
     return resp_content
-
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=8888)

@@ -1,9 +1,10 @@
 # Models by task
 MODELS = {
-    'chat': "meta-llama/Llama-2-7b-chat-hf",
+    'chat': "mistralai/Mixtral-8x7B-Instruct-v0.1",
     'summarization': "meta-llama/Llama-2-7b-chat-hf",
-    'math': "meta-llama/Llama-2-13b-chat-hf",
-    'text_to_sql': "meta-llama/Llama-2-13b-chat-hf"
+    'math': "NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO",
+    'text_to_sql': "deepseek-ai/deepseek-coder-33b-instruct",
+    'mistralai/Mixtral-8x7B-Instruct-v0.1': "mistralai/Mixtral-8x7B-Instruct-v0.1",
 }
 
 
