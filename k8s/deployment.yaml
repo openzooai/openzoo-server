@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: openzoo-server
-        image: 381492186474.dkr.ecr.us-west-1.amazonaws.com/openzoo-server:6c6f83006d9831407fadf550fe0e4160f4a1973b
+        image: 381492186474.dkr.ecr.us-west-1.amazonaws.com/openzoo-server
         imagePullPolicy: Always
         ports:
         - containerPort: 8888
