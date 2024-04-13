@@ -27,14 +27,12 @@ async def chat_completions(request: ChatCompletionRequest):
     """
     Generate completions for a chat prompt.
     """
-    print(request)
     if request.stream:
         return StreamingResponse(
             router.generate_stream(request), media_type="application/x-ndjson"
         )
     
     if request.messages:
-        print(request)
         resp_content = (
             router.generate(request)
         )
