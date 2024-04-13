@@ -38,5 +38,7 @@ async def chat_completions(request: ChatCompletionRequest):
         )
     else:
         resp_content = "Empty prompt. Please provide a message."
+    
+    print(resp_content)
 
     return resp_content
