@@ -1,0 +1,61 @@
+name: Deploy to Amazon ECS
+
+on:
+  push:
+    branches: [ "deploy" ]
+  pull_request: 
+    branches: [ "deploy" ]
+
+env:
+  AWS_REGION: us-west-1                       # set this to your preferred AWS region, e.g. us-west-1
+  ECR_REPOSITORY: openzoo-server              # set this to your Amazon ECR repository name
+  EKS_CLUSTER_NAME: openzoo-server                 # set this to your Amazon ECS cluster name
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        # Build a docker container and
+        # push it to ECR so that it can
+        # be deployed to ECS.
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+    - name: Update kube config
+      run: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $AWS_REGION
+
+    - name: Deploy to EKS
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}        
+        IMAGE_TAG: ${{ steps.commit.outputs.short }}
+      run: |
+        sed -i.bak "s|DOCKER_IMAGE|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" deployment.yaml && \
+        kubectl apply -f deployment.yaml
+        kubectl apply -f service.yaml
