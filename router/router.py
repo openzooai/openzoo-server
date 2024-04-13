@@ -23,10 +23,10 @@ from router.models import _select_model
 
 class Router:
     def __init__(self):
-        self.model_name = "models/intent_classifier"
-        self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-        self.Bert_Tokenizer = BertTokenizer.from_pretrained(self.model_name)
-        self.Bert_Model = BertForSequenceClassification.from_pretrained(self.model_name).to(self.device)
+        # self.model_name = "models/intent_classifier"
+        # self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+        # self.Bert_Tokenizer = BertTokenizer.from_pretrained(self.model_name)
+        # self.Bert_Model = BertForSequenceClassification.from_pretrained(self.model_name).to(self.device)
         self.chat_llm = None
         self.summarization_llm = None
         self.math_llm = None
