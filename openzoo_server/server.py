@@ -33,7 +33,7 @@ async def chat_completions(request: ChatCompletionRequest):
         )
     
     if request.messages:
-        print(request.messages)
+        print(request.messages[-1].content)
         resp_content = (
             router.generate(request)
         )
