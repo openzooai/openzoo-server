@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: openzoo-server
-        image: openzoo-server
+        image: DOCKER_IMAGE
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8888
