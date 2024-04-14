@@ -2,6 +2,7 @@
 import json
 import requests
 import sseclient
+from utils.utils import chat_completion_to_dict
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -23,14 +24,7 @@ from router.models import _select_model
 
 class Router:
     def __init__(self):
-        # self.model_name = "models/intent_classifier"
-        # self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-        # self.Bert_Tokenizer = BertTokenizer.from_pretrained(self.model_name)
-        # self.Bert_Model = BertForSequenceClassification.from_pretrained(self.model_name).to(self.device)
-        self.chat_llm = None
-        self.summarization_llm = None
-        self.math_llm = None
-        self.texttosql_llm = None
+        pass
 
 
     def generate(self,request):
@@ -89,39 +83,36 @@ class Router:
         # If task is not specified, 
         if task is None:
             # Infer intent
-            matches = self.predict_model(text)
-            print(matches)
-            task = [key for key, value in matches.items() if value == 1][0]
+            task_object = chat_completion_to_dict(self.predict_task(text))
+            task = task_object['choices'][0]['message']['content'].strip()
 
         model_name = _select_model(text, task)
 
         return model_name
+
     
+    def predict_task(self, input_text):
+        task = client.chat.completions.create(
+            model="mistralai/Mixtral-8x7B-Instruct-v0.1",
+            messages=[{"role": "user", "content": f"""
+        You are a prompt intent classifier. Classify the following prompt according to one of these categories:
+                    
+        - chat
+        - code
+        - summarization
+        - text_to_sql
+        - math
+        - translation
+                    
+        Classify the following prompt:
+                    
+        ---               
+        {input_text}
+        ---
+                    
+        Return only the class selected from above and nothing else.
+        """}],
+            stream=False,
+        )
 
-    def predict_model(self, input_text):
-        model=self.Bert_Model
-        tokenizer=self.Bert_Tokenizer
-        device=self.device
-
-        user_input = [input_text]
-
-        user_encodings = tokenizer(
-            user_input, truncation=True, padding=True, return_tensors="pt")
-
-        user_dataset = TensorDataset(
-            user_encodings['input_ids'], user_encodings['attention_mask'])
-
-        user_loader = DataLoader(user_dataset, batch_size=1, shuffle=False)
-
-        model.eval()
-        with torch.no_grad():
-            for batch in user_loader:
-                input_ids, attention_mask = [t.to(device) for t in batch]
-                outputs = model(input_ids, attention_mask=attention_mask)
-                logits = outputs.logits
-                predictions = torch.sigmoid(logits)
-
-        predicted_labels = (predictions.cpu().numpy() > 0.5).astype(int)
-        labels_list = ['chat', 'summarization', 'math', 'text_to_sql']
-        result = dict(zip(labels_list, predicted_labels[0]))
-        return result
+        return task
