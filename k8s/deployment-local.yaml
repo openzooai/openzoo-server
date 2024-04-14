@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openzoo-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openzoo-server
+  template:
+    metadata:
+      labels:
+        app: openzoo-server
+    spec:
+      containers:
+      - name: openzoo-server
+        image: openzoo-server-image
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8888
