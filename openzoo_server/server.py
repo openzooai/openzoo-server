@@ -27,6 +27,7 @@ async def chat_completions(request: ChatCompletionRequest):
     """
     Generate completions for a chat prompt.
     """
+
     if request.stream:
         return StreamingResponse(
             router.generate_stream(request), media_type="application/x-ndjson"
@@ -38,7 +39,5 @@ async def chat_completions(request: ChatCompletionRequest):
         )
     else:
         resp_content = "Empty prompt. Please provide a message."
-    
-    print(resp_content)
 
     return resp_content
