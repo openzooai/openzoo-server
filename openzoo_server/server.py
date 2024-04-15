@@ -3,6 +3,7 @@ import asyncio
 import json
 import time
 from typing import Optional
+from utils.utils import chat_completion_to_dict
 
 
 # FastAPI, Starlette
@@ -12,7 +13,7 @@ from fastapi.security import HTTPBearer
 
 
 # OpenZoo
-from router.router import Router
+from inference.infer import InferenceEngine
 from validation.chat import ChatCompletionRequest
 
 
@@ -22,7 +23,7 @@ security = HTTPBearer(auto_error=False)
 
 
 # instantiate the router
-router = Router()
+inferenceEngine = InferenceEngine()
 
 
 # Authorization
@@ -42,16 +43,21 @@ async def chat_completions(request: ChatCompletionRequest, header= Depends(check
     Generate completions for a chat prompt.
     """
 
+    # Check if the request is for streaming
     if request.stream:
-        return StreamingResponse(
-            router.generate_stream(request), media_type="application/x-ndjson"
+        response = StreamingResponse(
+            inferenceEngine.generate_stream(request), media_type="application/x-ndjson"
         )
-    
-    if request.messages:
-        resp_content = (
-            router.generate(request)
+    # If not, check for messages to generate a response
+    elif request.messages:
+        response = (
+            inferenceEngine.generate(request)
         )
+    # If no messages, return an error
     else:
-        resp_content = "Empty prompt. Please provide a message."
+        response = "Empty prompt. Please provide a message."
 
-    return resp_content
+    response_dict = chat_completion_to_dict(response)
+    print(response_dict['usage'])
+
+    return response

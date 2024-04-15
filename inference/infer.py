@@ -19,10 +19,10 @@ client = get_together_client()
 
 
 # Models by task
-from router.models import _select_model
+from inference.models import _select_model
 
 
-class Router:
+class InferenceEngine:
     def __init__(self):
         pass
 
