@@ -17,7 +17,7 @@ from inference.infer import InferenceEngine
 from validation.chat import ChatCompletionRequest
 inferenceEngine = InferenceEngine()
 from routers import chat
-from auth.APIKeyManager import check_bearer_credentials, APIKeyManager
+from auth.APIKeyManager import APIKeyManager
 apiKeyManager = APIKeyManager("auth/api_keys.json")
 
 
