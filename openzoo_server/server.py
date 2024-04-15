@@ -42,8 +42,6 @@ async def chat_completions(request: ChatCompletionRequest, header= Depends(check
     Generate completions for a chat prompt.
     """
 
-    print(header)
-
     if request.stream:
         return StreamingResponse(
             router.generate_stream(request), media_type="application/x-ndjson"
