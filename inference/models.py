@@ -12,7 +12,6 @@ MODELS = {
              "codellama/CodeLlama-7b-Instruct-hf",],
 
     'summarization': ["mistralai/Mixtral-8x7B-Instruct-v0.1",
-                      "meta-llama/Llama-2-13b-chat-hf",
                       "meta-llama/Llama-2-7b-chat-hf",
                       "google/gemma-2b-it",
                       "microsoft/phi-2"],
