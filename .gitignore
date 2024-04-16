@@ -3,3 +3,4 @@
 
 # Models
 models/
+auth/api_keys.json

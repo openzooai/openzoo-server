@@ -7,33 +7,27 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# Classifier
-import torch
-from transformers import BertTokenizer, BertForSequenceClassification
-from torch.utils.data import DataLoader, TensorDataset
-
-
 # Providers
 from providers.together.config import get_together_client, get_together_url, get_together_api_key
 client = get_together_client()
 
 
 # Models by task
-from router.models import _select_model
+from inference.models import best_fit_model_for_spec
 
 
-class Router:
+class InferenceEngine:
     def __init__(self):
         pass
 
 
     def generate(self,request):
         messages=request.messages
-        task=request.model
+        spec=request.model
         prompt = messages[-1].content
         
         # Select model
-        model_name = self.select_model(prompt, task)
+        model_name = self.select_model(prompt, spec)
                 
         response = client.chat.completions.create(
             messages=messages,
@@ -47,8 +41,8 @@ class Router:
         url = get_together_url()
         api_key = get_together_api_key()
         prompt = request.messages[-1].content
-        task = request.model
-        model = self.select_model(prompt, task)
+        spec = request.model
+        model = self.select_model(prompt, spec)
 
         payload = {
             "model": model,
@@ -79,20 +73,20 @@ class Router:
             yield f"data: {event.data}\n\n"
 
 
-    def select_model(self, text, task):
+    def select_model(self, text, spec):
         # If task is not specified, 
-        if task is None:
+        if spec is None:
             # Infer intent
-            task_object = chat_completion_to_dict(self.predict_task(text))
-            task = task_object['choices'][0]['message']['content'].strip()
+            spec_object = chat_completion_to_dict(self.predict_task(text))
+            spec = spec_object['choices'][0]['message']['content'].strip()
 
-        model_name = _select_model(text, task)
+        model_name = best_fit_model_for_spec(spec.split())
 
         return model_name
 
     
     def predict_task(self, input_text):
-        task = client.chat.completions.create(
+        spec = client.chat.completions.create(
             model="mistralai/Mixtral-8x7B-Instruct-v0.1",
             messages=[{"role": "user", "content": f"""
         You are a prompt intent classifier. Classify the following prompt according to one of these categories:
@@ -115,4 +109,4 @@ class Router:
             stream=False,
         )
 
-        return task
+        return spec
