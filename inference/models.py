@@ -29,7 +29,6 @@ MODELS = {
           "codellama/CodeLlama-70b-Instruct-hf"],
 
     'M': ["mistralai/Mixtral-8x7B-Instruct-v0.1",
-          "meta-llama/Llama-2-34b-chat-hf",
           "codellama/CodeLlama-34b-Instruct-hf"],
 
     'S': ["mistralai/Mistral-7B-Instruct-v0.2",
