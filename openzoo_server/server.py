@@ -28,6 +28,6 @@ app = FastAPI(title="OpenZoo")
 # Chat completions
 app.include_router(
     chat.router,
-    prefix="/chat",
+    prefix="/v1/chat",
     dependencies=[Depends(apiKeyManager.verify_api_key)]
 )

@@ -99,7 +99,7 @@ def best_fit_model_for_spec(spec, models=MODELS):
     
     if not common_resources:
         # If there's no common resource across all spec, return None
-        raise ValueError(f"Task {task} not found in MODELS keys")
+        raise ValueError(f"No models satisfy the given spec: {spec}")
     
     # Find the resource with the lowest score
     model_name = min(common_resources, key=common_resources.get)
