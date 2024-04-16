@@ -13,7 +13,7 @@ client = get_together_client()
 
 
 # Models by task
-from inference.models import _select_model, best_fit_model_for_spec
+from inference.models import best_fit_model_for_spec
 
 
 class InferenceEngine:
