@@ -37,6 +37,19 @@ MODELS = {
 
     'XS': ["google/gemma-2b-it",
            "microsoft/phi-2"],
+
+    "databricks/dbrx-instruct": ["databricks/dbrx-instruct"],
+    "mistralai/Mixtral-8x7B-Instruct-v0.1": ["mistralai/Mixtral-8x7B-Instruct-v0.1"], 
+    "mistralai/Mistral-7B-Instruct-v0.2": ["mistralai/Mistral-7B-Instruct-v0.2"],
+    "codellama/CodeLlama-70b-Instruct-hf": ["codellama/CodeLlama-70b-Instruct-hf"],
+    "codellama/CodeLlama-34b-Instruct-hf": ["codellama/CodeLlama-34b-Instruct-hf"],
+    "codellama/CodeLlama-7b-Instruct-hf": ["codellama/CodeLlama-7b-Instruct-hf"],
+    "meta-llama/Llama-2-70b-chat-hf": ["meta-llama/Llama-2-70b-chat-hf"],
+    "meta-llama/Llama-2-13b-chat-hf": ["meta-llama/Llama-2-13b-chat-hf"],
+    "meta-llama/Llama-2-7b-chat-hf": ["meta-llama/Llama-2-7b-chat-hf"],
+    "microsoft/phi-2": ["microsoft/phi-2"], 
+    "google/gemma-2b-it": ["google/gemma-2b-it"],
+    
 }
 
 def best_fit_model_for_spec(spec, models=MODELS):
@@ -48,9 +61,23 @@ def best_fit_model_for_spec(spec, models=MODELS):
     :return: The resource with the lowest score from the intersection of lists for the given spec, or None if no common resource is found.
     """
 
+    # If first element of spec is one of the models, return it
+    if spec[0] in ["databricks/dbrx-instruct",
+                   "mistralai/Mixtral-8x7B-Instruct-v0.1", 
+                   "mistralai/Mistral-7B-Instruct-v0.2",
+                   "codellama/CodeLlama-70b-Instruct-hf",
+                   "codellama/CodeLlama-34b-Instruct-hf",
+                   "codellama/CodeLlama-7b-Instruct-hf",
+                   "meta-llama/Llama-2-70b-chat-hf",
+                   "meta-llama/Llama-2-13b-chat-hf",
+                   "meta-llama/Llama-2-7b-chat-hf",
+                   "microsoft/phi-2", 
+                   "google/gemma-2b-it"]:
+        return spec[0]
+
     # If spec doesn't have one of ["XL", "L", "M", "S", "XS"], add 'M' as default
     if not any(size in spec for size in ["XL", "L", "M", "S", "XS"]):
-        spec.append("M")
+        spec.append("S")
 
     # Initialize a dictionary to keep track of scores for each resource
     resource_scores = {}
