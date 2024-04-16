@@ -11,7 +11,7 @@ MODELS = {
              "codellama/CodeLlama-34b-Instruct-hf",
              "codellama/CodeLlama-7b-Instruct-hf",],
 
-    'summarization': ["meta-llama/Llama-2-34b-chat-hf",
+    'summarization': ["mistralai/Mixtral-8x7B-Instruct-v0.1",
                       "meta-llama/Llama-2-13b-chat-hf",
                       "meta-llama/Llama-2-7b-chat-hf",
                       "google/gemma-2b-it",
@@ -29,7 +29,6 @@ MODELS = {
           "codellama/CodeLlama-70b-Instruct-hf"],
 
     'M': ["mistralai/Mixtral-8x7B-Instruct-v0.1",
-          "meta-llama/Llama-2-34b-chat-hf",
           "codellama/CodeLlama-34b-Instruct-hf"],
 
     'S': ["mistralai/Mistral-7B-Instruct-v0.2",
