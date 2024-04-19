@@ -73,6 +73,9 @@ def best_fit_model_for_spec(spec, models=MODELS):
                    "microsoft/phi-2", 
                    "google/gemma-2b-it"]:
         return spec[0]
+    
+    if spec[0] == "moderate": 
+        return "Meta-Llama/Llama-Guard-7b"
 
     # If spec doesn't have one of ["XL", "L", "M", "S", "XS"], add 'M' as default
     if not any(size in spec for size in ["XL", "L", "M", "S", "XS"]):
