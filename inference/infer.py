@@ -18,10 +18,75 @@ from inference.models import best_fit_model_for_spec
 
 class InferenceEngine:
     def __init__(self):
-        pass
+        self.url = get_together_url()
+        self.api_key = get_together_api_key()
 
 
-    def generate(self,request):
+    def generate_completion(self,request):
+        url = self.url + "/completions"
+        spec=request.model
+        prompt = request.prompt
+        model = self.select_model(prompt, spec)
+        
+        payload = {
+            "model": model,
+            "prompt": prompt,
+            "max_tokens": 200,
+            "stop": ["<s>", "\n"],
+            "temperature": 0.7,
+            "top_p": 0.7,
+            "top_k": 50,
+            "repetition_penalty": 1.1
+        }
+        headers = {
+            "accept": "application/json",
+            "content-type": "application/json",
+            "Authorization": f"Bearer {self.api_key}",
+        }
+        print(payload)
+
+        response = requests.post(self.url, json=payload, headers=headers)
+
+        return response.text
+    
+
+    async def generate_completion_stream(self,request):
+        url = self.url + "/completions"
+        prompt = request.prompt
+        spec = request.model
+        model = self.select_model(prompt, spec)
+
+        payload = {
+            "model": model,
+            "prompt": prompt,
+            "max_tokens": 128,
+            "stop": ["<s>", "\n"],
+            "temperature": 0.7,
+            "top_p": 0.7,
+            "top_k": 50,
+            "repetition_penalty": 1.1,
+            "stream_tokens": True,
+        }
+        headers = {
+            "accept": "application/json",
+            "content-type": "application/json",
+            "Authorization": f"Bearer {self.api_key}",
+        }
+
+        response = requests.post(self.url, json=payload, headers=headers, stream=True)
+        response.raise_for_status()
+
+        client = sseclient.SSEClient(response)
+        for event in client.events():
+            if event.data == "[DONE]":
+                yield "data: [DONE]\n\n"
+                break
+
+            partial_result = json.loads(event.data)
+            yield f"data: {event.data}\n\n"
+
+
+    def generate_chat_completion(self,request):
         messages=request.messages
         spec=request.model
         prompt = messages[-1].content
@@ -37,9 +102,8 @@ class InferenceEngine:
         return response
     
 
-    async def generate_stream(self,request):
-        url = get_together_url()
-        api_key = get_together_api_key()
+    async def generate_chat_completion_stream(self,request):
+        url = self.url + "/chat/completions"
         prompt = request.messages[-1].content
         spec = request.model
         model = self.select_model(prompt, spec)
@@ -47,20 +111,21 @@ class InferenceEngine:
         payload = {
             "model": model,
             "prompt": prompt,
-            "max_tokens": 512,
+            "max_tokens": 128,
+            "stop": ["<s>", "\n"],
             "temperature": 0.7,
             "top_p": 0.7,
             "top_k": 50,
-            "repetition_penalty": 1,
+            "repetition_penalty": 1.1,
             "stream_tokens": True,
         }
         headers = {
             "accept": "application/json",
             "content-type": "application/json",
-            "Authorization": f"Bearer {api_key}",
+            "Authorization": f"Bearer {self.api_key}",
         }
 
-        response = requests.post(url, json=payload, headers=headers, stream=True)
+        response = requests.post(self.url, json=payload, headers=headers, stream=True)
         response.raise_for_status()
 
         client = sseclient.SSEClient(response)

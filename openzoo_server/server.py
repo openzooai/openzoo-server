@@ -16,7 +16,7 @@ from fastapi.security import HTTPBearer
 from inference.infer import InferenceEngine
 from validation.chat import ChatCompletionRequest
 inferenceEngine = InferenceEngine()
-from routers import chat
+from routers import chat, completions
 from auth.APIKeyManager import APIKeyManager
 apiKeyManager = APIKeyManager("auth/api_keys.json")
 
@@ -29,5 +29,13 @@ app = FastAPI(title="OpenZoo")
 app.include_router(
     chat.router,
     prefix="/v1/chat",
+    dependencies=[Depends(apiKeyManager.verify_api_key)]
+)
+
+
+# Completions
+app.include_router(
+    completions.router,
+    prefix="/v1",
     dependencies=[Depends(apiKeyManager.verify_api_key)]
 )
