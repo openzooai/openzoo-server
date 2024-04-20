@@ -140,10 +140,11 @@ class InferenceEngine:
 
     def select_model(self, text, spec):
         # If task is not specified, 
-        if spec is None:
+        if spec == "":
             # Infer intent
             spec_object = chat_completion_to_dict(self.predict_task(text))
             spec = spec_object['choices'][0]['message']['content'].strip()
+            print(spec)
 
         model_name = best_fit_model_for_spec(spec.split())
 
