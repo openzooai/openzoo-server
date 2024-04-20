@@ -30,9 +30,7 @@ async def chat_completions(request: ChatCompletionRequest, bearer = Depends(secu
     # If request.model contains 'safe', run moderation and inference in parallel
     if ' safe ' in request.model or ' safe' in request.model or 'safe ' in request.model:
         # Remove ' safe ' from the model
-        request.model = request.model.replace(' safe ', '')
-        request.model = request.model.replace(' safe', '')
-        request.model = request.model.replace('safe ', '')
+        request.model = request.model.replace('safe', '')
 
         # Create tasks for moderation and inference
         moderation_task = asyncio.create_task(moderator.moderate(request.messages[-1].content))
