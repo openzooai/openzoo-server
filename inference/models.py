@@ -1,9 +1,9 @@
 # Models by task
 MODELS = {
     'chat': ["databricks/dbrx-instruct",
-             "meta-llama/Llama-2-70b-chat-hf",
+             "meta-llama/Llama-3-70b-chat-hf",
              "mistralai/Mixtral-8x7B-Instruct-v0.1", 
-             "mistralai/Mistral-7B-Instruct-v0.2",
+             "meta-llama/Llama-3-8b-chat-hf",
              "google/gemma-2b-it"],
 
     'code': ["databricks/dbrx-instruct",
@@ -12,19 +12,19 @@ MODELS = {
              "codellama/CodeLlama-7b-Instruct-hf",],
 
     'summarization': ["mistralai/Mixtral-8x7B-Instruct-v0.1",
-                      "meta-llama/Llama-2-7b-chat-hf",
+                      "meta-llama/Llama-3-8b-chat-hf",
                       "google/gemma-2b-it",
                       "microsoft/phi-2"],
 
     'math': ["databricks/dbrx-instruct",
-             "meta-llama/Llama-2-70b-chat-hf",
+             "meta-llama/Llama-3-70b-chat-hf",
              "mistralai/Mixtral-8x7B-Instruct-v0.1",
-             "mistralai/Mistral-7B-Instruct-v0.2",
+             "meta-llama/Llama-3-8b-chat-hf",
              "google/gemma-2b-it"],
 
     'XL': ["databricks/dbrx-instruct"],
 
-    'L': ["meta-llama/Llama-2-70b-chat-hf",
+    'L': ["meta-llama/Llama-3-70b-chat-hf",
           "codellama/CodeLlama-70b-Instruct-hf"],
 
     'M': ["mistralai/Mixtral-8x7B-Instruct-v0.1",
@@ -32,7 +32,8 @@ MODELS = {
 
     'S': ["mistralai/Mistral-7B-Instruct-v0.2",
           "codellama/CodeLlama-7b-Instruct-hf",
-          "meta-llama/Llama-2-7b-chat-hf"],
+          "meta-llama/Llama-2-7b-chat-hf",
+          "meta-llama/Llama-3-8b-chat-hf"],
 
     'XS': ["google/gemma-2b-it",
            "microsoft/phi-2"],
@@ -48,6 +49,7 @@ MODELS = {
     "meta-llama/Llama-2-7b-chat-hf": ["meta-llama/Llama-2-7b-chat-hf"],
     "microsoft/phi-2": ["microsoft/phi-2"], 
     "google/gemma-2b-it": ["google/gemma-2b-it"],
+    "meta-llama/Llama-3-8b-chat-hf": ["meta-llama/Llama-3-8b-chat-hf"],
     
 }
 
