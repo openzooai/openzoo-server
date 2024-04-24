@@ -87,7 +87,8 @@ async def generate_chat_response(request: ChatCompletionRequest) -> Union[Stream
     # Check if the request is for streaming
     if request.stream:
         response = StreamingResponse(
-            inferenceEngine.generate_chat_completion_stream(request), media_type="application/x-ndjson"
+            inferenceEngine.generate_chat_completion_stream(request), 
+            media_type="application/x-ndjson"
         )
     # If not, check for messages to generate a response
     elif request.messages:
