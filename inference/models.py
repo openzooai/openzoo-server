@@ -1,6 +1,8 @@
 # Models by task
 MODELS = {
     'chat': ["databricks/dbrx-instruct",
+             "microsoft/WizardLM-2-8x22B",
+             "mistralai/Mixtral-8x22B-Instruct-v0.1",
              "meta-llama/Llama-3-70b-chat-hf",
              "mistralai/Mixtral-8x7B-Instruct-v0.1", 
              "meta-llama/Llama-3-8b-chat-hf",
@@ -22,7 +24,9 @@ MODELS = {
              "meta-llama/Llama-3-8b-chat-hf",
              "google/gemma-2b-it"],
 
-    'XL': ["databricks/dbrx-instruct"],
+    'XL': ["databricks/dbrx-instruct",
+           "microsoft/WizardLM-2-8x22B",
+           "mistralai/Mixtral-8x22B-Instruct-v0.1",],
 
     'L': ["meta-llama/Llama-3-70b-chat-hf",
           "codellama/CodeLlama-70b-Instruct-hf"],
@@ -37,6 +41,22 @@ MODELS = {
 
     'XS': ["google/gemma-2b-it",
            "microsoft/phi-2"],
+
+    'XL-context': ["microsoft/WizardLM-2-8x22B",
+                   "mistralai/Mixtral-8x22B-Instruct-v0.1",],
+
+    'L-context': ["databricks/dbrx-instruct",
+                  "mistralai/Mistral-7B-Instruct-v0.2",
+                  "mistralai/Mixtral-8x7B-Instruct-v0.1"],
+    
+    'M-context': ["codellama/CodeLlama-34b-Instruct-hf",
+                  "codellama/CodeLlama-13b-Instruct-hf",
+                  "codellama/CodeLlama-7b-Instruct-hf",],
+
+    'S-context': ["meta-llama/Llama-3-70b-chat-hf",
+                  "meta-llama/Llama-3-8b-chat-hf",
+                  "google/gemma-2b-it",
+                  "code-llama/CodeLlama-7ob-Instruct-hf",],                  
 
     "databricks/dbrx-instruct": ["databricks/dbrx-instruct"],
     "mistralai/Mixtral-8x7B-Instruct-v0.1": ["mistralai/Mixtral-8x7B-Instruct-v0.1"], 
@@ -80,7 +100,7 @@ def best_fit_model_for_spec(spec, models=MODELS):
         return "Meta-Llama/Llama-Guard-7b"
 
     # If spec doesn't have one of ["XL", "L", "M", "S", "XS"], add 'M' as default
-    if not any(size in spec for size in ["XL", "L", "M", "S", "XS"]):
+    if not any(size in spec for size in ["XL", "L", "M", "S", "XS"]) and not any(context_length in spec for context_length in ["XL-context", "L-context", "M-context", "S-context"]):
         spec.append("S")
 
     # Initialize a dictionary to keep track of scores for each resource
