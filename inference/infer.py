@@ -102,7 +102,7 @@ class InferenceEngine:
 
     
     def predict_task(self, input_text):
-        spec = client.chat.completions.create(
+        spec = self.client.chat.completions.create(
             model="mistralai/Mixtral-8x7B-Instruct-v0.1",
             messages=[{"role": "user", "content": f"""
         You are a prompt intent classifier. Classify the following prompt according to one of these categories:
