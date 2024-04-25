@@ -5,11 +5,11 @@ import sseclient
 from utils.utils import chat_completion_to_dict
 import warnings
 warnings.filterwarnings('ignore')
+from starlette.responses import StreamingResponse
 
 
 # Providers
 from providers.together.config import get_together_client, get_together_url, get_together_api_key
-client = get_together_client()
 
 
 # Models by task
@@ -20,6 +20,7 @@ class InferenceEngine:
     def __init__(self):
         self.url = get_together_url()
         self.api_key = get_together_api_key()
+        self.client = get_together_client()
 
 
     def generate_completion(self,request):
@@ -79,11 +80,11 @@ class InferenceEngine:
         client = sseclient.SSEClient(response)
         for event in client.events():
             if event.data == "[DONE]":
-                yield "data: [DONE]\n\n"
+                yield "data: [DONE]"
                 break
 
             partial_result = json.loads(event.data)
-            yield f"data: {event.data}\n\n"
+            yield f"data: {event.data}"
 
 
     def generate_chat_completion(self,request):
@@ -93,49 +94,32 @@ class InferenceEngine:
         
         # Select model
         model_name = self.select_model(prompt, spec)
+
+        # Replace model_name in request
+        request.model = model_name
                 
-        response = client.chat.completions.create(
-            messages=messages,
-            model=model_name
-        )
+        response = self.client.chat.completions.create(**request.dict())
 
         return response
     
 
     async def generate_chat_completion_stream(self,request):
-        url = self.url + "/chat/completions"
         prompt = request.messages[-1].content
         spec = request.model
         model = self.select_model(prompt, spec)
+        request.model = model
 
-        payload = {
-            "model": model,
-            "prompt": prompt,
-            "max_tokens": 128,
-            "stop": ["<s>", "\n"],
-            "temperature": 0.7,
-            "top_p": 0.7,
-            "top_k": 50,
-            "repetition_penalty": 1.1,
-            "stream_tokens": True,
-        }
-        headers = {
-            "accept": "application/json",
-            "content-type": "application/json",
-            "Authorization": f"Bearer {self.api_key}",
-        }
+        stream = self.client.chat.completions.create(**request.dict())
 
-        response = requests.post(self.url, json=payload, headers=headers, stream=True)
-        response.raise_for_status()
-
-        client = sseclient.SSEClient(response)
-        for event in client.events():
-            if event.data == "[DONE]":
+        for chunk in stream:
+            # data = chunk.choices[0].delta.content
+            data = json.dumps(chunk.dict())
+            print(data)
+            if data == "[DONE]":
                 yield "data: [DONE]\n\n"
                 break
 
-            partial_result = json.loads(event.data)
-            yield f"data: {event.data}\n\n"
+            yield f"data: {data}\n\n"
 
 
     def select_model(self, text, spec):
