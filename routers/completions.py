@@ -24,27 +24,17 @@ async def completions(request: CompletionRequest, bearer = Depends(security)):
     Generate completions for a chat prompt.
     """
 
-    # Check if the request is for streaming
+    # If request.stream is True, generate a streaming response
     if request.stream:
         response = StreamingResponse(
-            inferenceEngine.generate_completion_stream(request), media_type="application/x-ndjson"
+            inferenceEngine.generate_completion_stream(request),
+            media_type="application/x-ndjson"
         )
-    # If not, check for messages to generate a response
+    # If request.prompt is not empty, generate a completion
     elif request.prompt:
-        response = (
-            inferenceEngine.generate_completion(request)
-        )
-    # If no messages, return an error
+        response = inferenceEngine.generate_completion(request)
+    # If no prompt, return an error
     else:
         response = "Empty prompt. Please provide a message."
-
-    # Convert the response to a dictionary to extract the total tokens used
-    # response_dict = chat_completion_to_dict(response)    
-    # total_tokens = response_dict['usage']['total_tokens']
-
-    # # Get API key from the request
-    # api_key = bearer.credentials
-    # spec = request.model
-    # print(spec)
 
     return response

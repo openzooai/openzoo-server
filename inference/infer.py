@@ -24,67 +24,35 @@ class InferenceEngine:
 
 
     def generate_completion(self,request):
-        url = self.url + "/completions"
         spec=request.model
         prompt = request.prompt
+
+        # Select model
         model = self.select_model(prompt, spec)
+
+        # Replace model in request
+        request.model = model
         
-        payload = {
-            "model": model,
-            "prompt": prompt,
-            "max_tokens": 200,
-            "stop": ["<s>", "\n"],
-            "temperature": 0.7,
-            "top_p": 0.7,
-            "top_k": 50,
-            "repetition_penalty": 1.1
-        }
-        headers = {
-            "accept": "application/json",
-            "content-type": "application/json",
-            "Authorization": f"Bearer {self.api_key}",
-        }
-        print(payload)
+        response = self.client.completions.create(**request.dict())
 
-        response = requests.post(self.url, json=payload, headers=headers)
-
-        return response.text
+        return response
     
 
     async def generate_completion_stream(self,request):
-        url = self.url + "/completions"
         prompt = request.prompt
         spec = request.model
         model = self.select_model(prompt, spec)
+        request.model = model
 
-        payload = {
-            "model": model,
-            "prompt": prompt,
-            "max_tokens": 128,
-            "stop": ["<s>", "\n"],
-            "temperature": 0.7,
-            "top_p": 0.7,
-            "top_k": 50,
-            "repetition_penalty": 1.1,
-            "stream_tokens": True,
-        }
-        headers = {
-            "accept": "application/json",
-            "content-type": "application/json",
-            "Authorization": f"Bearer {self.api_key}",
-        }
+        stream = self.client.completions.create(**request.dict())
 
-        response = requests.post(self.url, json=payload, headers=headers, stream=True)
-        response.raise_for_status()
-
-        client = sseclient.SSEClient(response)
-        for event in client.events():
-            if event.data == "[DONE]":
-                yield "data: [DONE]"
+        for chunk in stream:
+            data = json.dumps(chunk.dict())
+            if data == "[DONE]":
+                yield "data: [DONE]\n\n"
                 break
 
-            partial_result = json.loads(event.data)
-            yield f"data: {event.data}"
+            yield f"data: {data}\n\n"
 
 
     def generate_chat_completion(self,request):
@@ -112,9 +80,7 @@ class InferenceEngine:
         stream = self.client.chat.completions.create(**request.dict())
 
         for chunk in stream:
-            # data = chunk.choices[0].delta.content
             data = json.dumps(chunk.dict())
-            print(data)
             if data == "[DONE]":
                 yield "data: [DONE]\n\n"
                 break

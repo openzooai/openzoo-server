@@ -72,15 +72,6 @@ async def chat_completions(request: ChatCompletionRequest, bearer = Depends(secu
     else:
         response = await generate_chat_response(request)
 
-    # Convert the response to a dictionary to extract the total tokens used
-    # response_dict = chat_completion_to_dict(response)    
-    # total_tokens = response_dict['usage']['total_tokens']
-
-    # # Get API key from the request
-    # api_key = bearer.credentials
-    # spec = request.model
-    # print(spec)
-
     return response
 
 async def generate_chat_response(request: ChatCompletionRequest) -> Union[StreamingResponse, str]:
