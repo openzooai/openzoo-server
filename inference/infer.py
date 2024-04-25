@@ -112,9 +112,7 @@ class InferenceEngine:
         stream = self.client.chat.completions.create(**request.dict())
 
         for chunk in stream:
-            # data = chunk.choices[0].delta.content
             data = json.dumps(chunk.dict())
-            print(data)
             if data == "[DONE]":
                 yield "data: [DONE]\n\n"
                 break
