@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 import json
 import os
@@ -58,3 +58,15 @@ def get_models(request: Request):
 # def update_models(request: dict):
 #     write_json(request)
 #     return {"message": "Data updated successfully"}
+
+
+@router.get("/model-names")
+async def get_model_names():
+    # Assuming you have a function to read this from a file or database
+    model_names = [
+        "databricks/dbrx-instruct",
+        "meta-llama/Llama-3-70b-chat-hf",
+        "google/gemma-2b-it",
+        # Add more model names here
+    ]
+    return JSONResponse(model_names)
