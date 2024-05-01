@@ -54,7 +54,7 @@ MODELS = {
     'S-context': ["meta-llama/Llama-3-70b-chat-hf",
                   "meta-llama/Llama-3-8b-chat-hf",
                   "google/gemma-2b-it",
-                  "code-llama/CodeLlama-7ob-Instruct-hf",],                  
+                  "code-llama/CodeLlama-7b-Instruct-hf",],                  
 
     "databricks/dbrx-instruct": ["databricks/dbrx-instruct"],
     "mistralai/Mixtral-8x7B-Instruct-v0.1": ["mistralai/Mixtral-8x7B-Instruct-v0.1"], 
