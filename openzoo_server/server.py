@@ -18,7 +18,7 @@ from fastapi.responses import HTMLResponse
 from inference.infer import InferenceEngine
 from validation.chat import ChatCompletionRequest
 inferenceEngine = InferenceEngine()
-from routers import chat, completions, admin
+from routers import chat, completions, embeddings, admin
 from auth.APIKeyManager import APIKeyManager
 apiKeyManager = APIKeyManager("auth/api_keys.json")
 
@@ -49,6 +49,14 @@ app.include_router(
     completions.router,
     prefix="/v1",
     dependencies=[Depends(apiKeyManager.verify_api_key)]
+)
+
+
+# Embeddings
+app.include_router(
+    embeddings.router,
+    prefix="/v1",
+    # dependencies=[Depends(apiKeyManager.verify_api_key)]
 )
 
 

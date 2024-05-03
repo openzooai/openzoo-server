@@ -87,6 +87,13 @@ class InferenceEngine:
 
             yield f"data: {data}\n\n"
 
+    
+    async def generate_embeddings(self, input, model):
+
+        response = self.client.embeddings.create(input=input, model=model)
+
+        return response
+
 
     def select_model(self, text, spec):
         # If task is not specified, 
