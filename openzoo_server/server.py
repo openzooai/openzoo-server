@@ -56,7 +56,7 @@ app.include_router(
 app.include_router(
     embeddings.router,
     prefix="/v1",
-    # dependencies=[Depends(apiKeyManager.verify_api_key)]
+    dependencies=[Depends(apiKeyManager.verify_api_key)]
 )
 
 
