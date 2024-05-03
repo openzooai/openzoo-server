@@ -16,7 +16,7 @@ async def get_embeddings(request: Request):
     request_dict = await request.json()
     input = request_dict['input']
     model = request_dict['model']
-
+    
     # Generate embeddings
     embeddings = await inferenceEngine.generate_embeddings(input, model)
 
