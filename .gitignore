@@ -6,3 +6,6 @@ models/
 
 # notebooks
 **/*.ipynb**
+
+# .env
+.env
